@@ -1,0 +1,78 @@
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
+
+const SavedScreen = () => {
+  const [savedProperties, setSavedProperties] = useState([]);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    // Fetch saved properties from the backend
+    axios
+      .get('http://192.168.43.179:8000/api/saved-properties/')
+      .then((response) => {
+        setSavedProperties(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching saved properties:', error);
+      });
+  }, []);
+
+  const navigateToPropertyDetail = (propertyId) => {
+    navigation.navigate('PropertyDetail', { propertyId });
+  };
+
+  const renderSavedPropertyItem = ({ item }) => (
+    <TouchableOpacity onPress={() => navigateToPropertyDetail(item.property.id)}>
+      <View style={styles.savedPropertyItem}>
+        <Image source={{ uri: item.property.image }} style={styles.propertyImage} />
+        <Text style={styles.savedPropertyTitle}>{item.property_type}</Text>
+        <Text>Price: ${item.property.price}</Text>
+        <Text>Property Owner: {item.property.property_owner.username}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Saved Properties</Text>
+      <FlatList
+        data={savedProperties}
+        keyExtractor={(item) => item.id}
+        renderItem={renderSavedPropertyItem}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f2f2f2',
+    padding: 20,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  savedPropertyItem: {
+    marginBottom: 15,
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+  },
+  savedPropertyTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  propertyImage: {
+    width: '100%',
+    height: 150, // Adjust height as needed
+    resizeMode: 'cover',
+    borderRadius: 8,
+  },
+});
+
+export default SavedScreen;
