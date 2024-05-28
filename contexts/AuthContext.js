@@ -13,6 +13,8 @@ export const AuthProvider = ({ children }) => {
     checkAuthentication();
   }, []);
 
+  const referer = 'https://estaty.pythonanywhere.com'
+
   const checkAuthentication = async () => {
     try {
       // Fetch the user authentication status from AsyncStorage or your server
@@ -43,6 +45,8 @@ export const AuthProvider = ({ children }) => {
         headers: {
           'Content-Type': 'application/json',
           'X-CSRFToken': csrfToken,
+          'referer': referer
+
         },
       });
 

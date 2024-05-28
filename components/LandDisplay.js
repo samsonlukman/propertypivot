@@ -81,7 +81,7 @@ const LandDisplay = () => {
   
 
   const navigateToPropertyDetail = (propertyId) => {
-    navigation.navigate('Land Detail', { propertyId });
+    navigation.navigate('LandDetail', { propertyId });
   };
 
   const SaveUnsaveButton = ({ propertyId }) => {

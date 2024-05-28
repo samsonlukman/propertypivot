@@ -56,6 +56,8 @@ const UploadBuildingScreen = ({ navigation }) => {
   const [BuildingImages, setBuildingImages] = useState([]);
   const [country, setCountry] = useState(countriesList[0]);
 
+  const referer = 'https://estaty.pythonanywhere.com'
+
   const booleanFields = [
     { label: 'Swimming Pool', value: swimmingPool, setter: setSwimmingPool },
     { label: 'High-Speed Internet', value: highSpeedInternet, setter: setHighSpeedInternet },
@@ -147,6 +149,7 @@ const UploadBuildingScreen = ({ navigation }) => {
         headers: {
           'Content-Type': 'multipart/form-data',
           'X-CSRFToken': csrfToken,
+          'referer': referer
         },
       });
 

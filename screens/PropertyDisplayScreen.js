@@ -1,15 +1,16 @@
 // PropertyDisplayScreen.js
 import React from 'react';
-import { ScrollView, View, Text } from 'react-native';
+import { ScrollView, FlatList, View, SectionList, Text } from 'react-native';
 import PropertyDisplay from '../components/PropertyDisplay';
+
 
 const PropertyDisplayScreen = () => {
   return (
-    <ScrollView>
+    <FlatList>
       <View>
         <PropertyDisplay />
       </View>
-    </ScrollView>
+      </FlatList>
   );
 };
 

@@ -30,7 +30,7 @@ const PropertiesStack = () => {
     <Stack.Navigator initialRouteName="PropertyDisplayScreen">
       <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: true }} />
       <Stack.Screen name="UserRegistrationForm" component={UserRegistrationForm} options={{ headerShown: true }} />
-      <Stack.Screen name="PropertyDisplayScreen" component={PropertyDisplayScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="PropertyDisplayScreen" component={PropertyDisplay} options={{ headerShown: false }} />
       <Stack.Screen name="PropertyDetail" component={PropertyDetailScreen} options={{ headerShown: true }} />
     </Stack.Navigator>
   );
@@ -39,8 +39,8 @@ const PropertiesStack = () => {
 const LandsStack = () => {
   return (
     <Stack.Navigator initialRouteName="Lands">
-      <Stack.Screen name="Lands" component={LandDisplay} options={{ headerShown: false }} />
-      <Stack.Screen name="Land Detail" component={LandDetail} options={{ headerShown: true }} />
+      <Stack.Screen name="Land" component={LandDisplay} options={{ headerShown: false }} />
+      <Stack.Screen name="LandDetail" component={LandDetail} options={{ headerShown: true }} />
       
     </Stack.Navigator>
   );
@@ -49,12 +49,12 @@ const LandsStack = () => {
 const AccountStack = () => {
   return (
     <Stack.Navigator initialRouteName="Account">
-      <Stack.Screen name="Account" component={Account} options={{ headerShown: false }} />
+      <Stack.Screen name="userAccount" component={Account} options={{ headerShown: false }} />
    
     <Stack.Screen name="UploadProperty" component={UploadPropertyScreen} options={{ headerShown: true }} />
     <Stack.Screen name="UploadBuilding" component={UploadBuildingScreen} options={{ headerShown: true }} />
     <Stack.Screen name="UploadLand" component={UploadLandScreen} options={{ headerShown: true }} />
-    <Stack.Screen name="About Us" component={AboutUs} options={{ headerShown: true }} />
+    <Stack.Screen name="AboutUs" component={AboutUs} options={{ headerShown: true }} />
     <Stack.Screen name="Settings" component={Settings} options={{ headerShown: true }} />
     <Stack.Screen name="SavedBuildings" component={SavedBuildings} options={{ headerShown: true}} />
     <Stack.Screen name="SavedLands" component={SavedLands} options={{ headerShown: true}} />

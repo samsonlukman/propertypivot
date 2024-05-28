@@ -12,6 +12,7 @@ const UploadLandScreen = ({ navigation }) => {
   const [description, setDescription] = useState('');
   const [ownerId, setOwnerId] = useState(null);
   const [landImages, setLandImages] = useState([]);
+  const referer = 'https://estaty.pythonanywhere.com'
   const {
     control,
     handleSubmit,
@@ -87,6 +88,7 @@ const UploadLandScreen = ({ navigation }) => {
         headers: {
           'Content-Type': 'multipart/form-data',
           'X-CSRFToken': csrfToken,
+          'referer': referer
         },
       });
 

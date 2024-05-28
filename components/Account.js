@@ -130,7 +130,7 @@ const Account = ({ navigation }) => {
             <Text style={styles.linkText}>Saved Properties</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => navigation.navigate('About Us')}>
+          <TouchableOpacity onPress={() => navigation.navigate('AboutUs')}>
             <Text style={styles.linkText}>About Us</Text>
           </TouchableOpacity>
 
@@ -163,11 +163,11 @@ const Account = ({ navigation }) => {
       >
         <View style={styles.modalContainer}>
           <TouchableOpacity onPress={() => { toggleUploadModal(); navigation.navigate('UploadLand')}} >
-            <Text style={styles.modalEmail}>Land---></Text>
+            <Text style={styles.modalEmail}>Land---</Text>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => { toggleUploadModal(); navigation.navigate('UploadBuilding')}}>
-            <Text style={styles.modalWhatsapp}>Building---></Text>
+            <Text style={styles.modalWhatsapp}>Building---</Text>
           </TouchableOpacity>
 
           <Button title="Close" onPress={toggleUploadModal} />

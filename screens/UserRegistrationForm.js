@@ -30,6 +30,8 @@ const UserRegistrationForm = ({ navigation }) => {
       return;
     }
 
+    const referer = 'https://estaty.pythonanywhere.com'
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -72,6 +74,7 @@ const UserRegistrationForm = ({ navigation }) => {
         headers: {
           'Content-Type': 'multipart/form-data',
           'X-CSRFToken': csrfToken,
+          'referer': referer
         },
       });
 
