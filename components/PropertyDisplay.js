@@ -1,267 +1,274 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, FlatList, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
-import { useAuth } from '../contexts/AuthContext';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import Swiper from 'react-native-swiper';
 
-const PropertyDisplay = () => {
-  const [properties, setProperties] = useState([]);
-  const [loggedInUser, setLoggedInUser] = useState(null);
-  const [csrfToken, setCsrfToken] = useState(null);
-  const [savedProperties, setSavedProperties] = useState([]);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const navigation = useNavigation();
-  const { user } = useAuth();
-
-  useEffect(() => {
-    const fetchCsrfToken = async () => {
-      try {
-        const response = await axios.get('https://estaty.pythonanywhere.com/api/get-csrf-token/');
-        setCsrfToken(response.data.csrf_token);
-      } catch (error) {
-        console.error('Error fetching CSRF token:', error.message);
-      }
-    };
-
-    fetchCsrfToken();
-  }, []);
-  
-
-  useEffect(() => {
-    if (csrfToken && user && user.isAuthenticated) {
-      axios
-        .get('https://estaty.pythonanywhere.com/api/user/', {
-          headers: {
-            'X-CSRFToken': csrfToken,
-          },
-        })
-        .then((response) => {
-          setLoggedInUser(response.data);
-        })
-        .catch((error) => {
-          console.error('Error fetching user details:', error.response ? error.response.data : error.message);
-        });
-    }
-  }, [csrfToken, user]);
-
-  useEffect(() => {
-    const fetchBuildingsAndImages = async () => {
-      try {
-        const buildingResponse = await axios.get('https://estaty.pythonanywhere.com/api/buildings/');
-        const buildingImagesResponse = await axios.get('https://estaty.pythonanywhere.com/api/building-images/');
-        
-        let propertiesWithImages = buildingResponse.data.map((buildingItem) => {
-          const relatedImages = buildingImagesResponse.data.filter(
-            (image) => image.building === buildingItem.id
-          );
-
-          return {
-            ...buildingItem,
-            images: relatedImages.map((imageItem) => imageItem.image),
-          };
-        });
-
-        // Filter buildings by country for logged-in users
-        if (loggedInUser) {
-          propertiesWithImages = propertiesWithImages.filter(
-            (building) => building.country === loggedInUser.country
-          );
-        }
-
-        setProperties(propertiesWithImages);
-      } catch (error) {
-        console.error('Error fetching buildings and images:', error.response ? error.response.data : error.message);
-      }
-    };
-
-    fetchBuildingsAndImages();
-  }, [loggedInUser]);
-
-  useEffect(() => {
-    const fetchSavedProperties = async () => {
-      if (loggedInUser) {
-        try {
-          const response = await axios.get(`https://estaty.pythonanywhere.com/api/saved-properties/?user=${loggedInUser.id}`, {
-            headers: {
-              'X-CSRFToken': csrfToken,
-            },
-          });
-          setSavedProperties(response.data);
-        } catch (error) {
-          console.error('Error fetching saved properties:', error.response ? error.response.data : error.message);
-        }
-      }
-    };
-
-    fetchSavedProperties();
-  }, [loggedInUser, csrfToken]);
-
-  const navigateToPropertyDetail = (propertyId) => {
-    navigation.navigate('PropertyDetail', { propertyId });
-  };
-
-  const SaveUnsaveButton = ({ propertyId }) => {
-    const isSaved = savedProperties.some(savedProperty => savedProperty.building === propertyId);
-
-    const handleToggleSaveProperty = async () => {
-      try {
-        if (isSaved) {
-          Alert.alert('Already Saved');
-        } else {
-          await axios.post(
-            'https://estaty.pythonanywhere.com/api/saved-properties/',
-            { building: propertyId, user: loggedInUser.id },
-            {
-              headers: {
-                'X-CSRFToken': csrfToken,
-                'Referer': 'https://estaty.pythonanywhere.com'
-              }
-            }
-          );
-          setSavedProperties([...savedProperties, { building: propertyId }]);
-          Alert.alert('Property Saved');
-        }
-      } catch (error) {
-        console.error('Error saving property:', error.response ? error.response.data : error.message);
-        console.log('csrf', csrfToken);
-      }
-    };
-    
-    return (
-      <TouchableOpacity onPress={handleToggleSaveProperty}>
-        <Icon name='heart' size={30} color={isSaved ? 'red' : 'grey'} />
-      </TouchableOpacity>
-    );
-  };
-
-  const renderPropertyItem = ({ item }) => (
-    <View style={styles.buildingItem}>
-      <Swiper
-        style={styles.carouselContainer}
-        loop={false}
-        showsPagination
-        paginationStyle={styles.paginationStyle}
-        dot={<View style={styles.paginationDot} />}
-        activeDot={<View style={styles.activePaginationDot} />}
-        onIndexChanged={(index) => setActiveImageIndex(index)}
-      >
-        {item.images.map((image, index) => (
-          <View key={index}>
-            <Image source={{ uri: image }} style={styles.buildingImage} />
-          </View>
-        ))}
-      </Swiper>
-
-      <TouchableOpacity onPress={() => navigateToPropertyDetail(item.id)}>
-        <View style={styles.propertyDetails}>
-          <View style={styles.rowContainer}>
-            <Text style={styles.propertyTitle}>{item.name}</Text>
-            {user && user.isAuthenticated && (
-              <View style={styles.iconContainer}>
-                <SaveUnsaveButton propertyId={item.id} />
-              </View>
-            )}
-          </View>
-          <Text style={styles.propertyPrice}>Price: {item.currency}{item.price}</Text>
-          <Text style={styles.propertyCountry}>Country: {item.country}</Text>
-        </View>
-      </TouchableOpacity>
-    </View>
-  );
-
+// Placeholder for PropertyDetail screen 
+const PropertyDetail = ({ route }) => {
+  const { propertyId } = route.params;
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={properties}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderPropertyItem}
-      />
+    <View>
+      <Text>Property Detail Screen for Property ID: {propertyId}</Text>
     </View>
   );
 };
 
+// Placeholder for LandDetail screen 
+const LandDetail = ({ route }) => {
+  const { propertyId } = route.params;
+  return (
+    <View>
+      <Text>Land Detail Screen for Property ID: {propertyId}</Text>
+    </View>
+  );
+};
+
+// Main SearchScreen component
+const SearchScreen = ({ navigation }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [country, setCountry] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [buildingResults, setBuildingResults] = useState([]);
+  const [landResults, setLandResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [searchPerformed, setSearchPerformed] = useState(false);
+
+  const isSearchEnabled = searchQuery.length > 0 || minPrice.length > 0 || maxPrice.length > 0 || country.length > 0;
+
+  const handleSearch = async () => {
+    try {
+      setLoading(true); // Start loading
+      setSearchPerformed(true); // Mark search as performed
+      setSearchResults([]); // Clear previous search results
+
+      // Fetch buildings and their images
+      const buildingResponse = await axios.get(`https://estaty.pythonanywhere.com/api/buildingss/?search=${searchQuery}&min_price=${minPrice}&max_price=${maxPrice}&country=${country}`);
+      const buildingImagesResponse = await axios.get('https://estaty.pythonanywhere.com/api/building-images/');
+
+      const buildingResultsWithImages = buildingResponse.data.map((buildingItem) => {
+        const relatedImages = buildingImagesResponse.data.filter(
+          (image) => image.building === buildingItem.id
+        );
+
+        return {
+          ...buildingItem,
+          images: relatedImages.map((imageItem) => imageItem.image),
+        };
+      });
+
+      setBuildingResults(buildingResultsWithImages);
+
+      // Fetch lands and their images
+      const landResponse = await axios.get(`https://estaty.pythonanywhere.com/api/landss/?search=${searchQuery}&min_price=${minPrice}&max_price=${maxPrice}&country=${country}`);
+      const landImagesResponse = await axios.get('https://estaty.pythonanywhere.com/api/land-images/');
+
+      const landResultsWithImages = landResponse.data.map((landItem) => {
+        const relatedImages = landImagesResponse.data.filter(
+          (image) => image.land === landItem.id
+        );
+
+        return {
+          ...landItem,
+          images: relatedImages.map((imageItem) => imageItem.image),
+        };
+      });
+
+      setLandResults(landResultsWithImages);
+
+      // Merge building and land results
+      setSearchResults([...buildingResultsWithImages, ...landResultsWithImages]);
+    } catch (error) {
+      console.error('Error fetching search results:', error);
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
+
+  const navigateToDetails = (item) => {
+    const detailScreen = item.category === 'building' ? 'PropertyDetail' : 'LandDetail';
+    navigation.navigate(detailScreen, { propertyId: item.id });
+  };
+
+  const renderResultItem = ({ item }) => (
+    <TouchableOpacity onPress={() => navigateToDetails(item)}>
+      <View style={styles.resultItem}>
+        {item.images && item.images.length > 0 && (
+          <Image source={{ uri: item.images[0] }} style={styles.resultImage} />
+        )}
+        <Text
+          style={styles.resultName}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {item.name}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+  
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.searchRow}>
+        <TextInput
+          style={styles.nameSearch}
+          placeholder="Search by name..."
+          value={searchQuery}
+          onChangeText={(text) => setSearchQuery(text)}
+        />
+        <View style={styles.filterContainer}>
+          <TextInput
+            style={styles.filterInput}
+            placeholder="Min Price"
+            value={minPrice}
+            onChangeText={(text) => setMinPrice(text)}
+            keyboardType="numeric"
+          />
+          <TextInput
+            style={styles.filterInput}
+            placeholder="Max Price"
+            value={maxPrice}
+            onChangeText={(text) => setMaxPrice(text)}
+            keyboardType="numeric"
+          />
+          <TextInput
+            style={styles.filterInput}
+            placeholder="Country"
+            value={country}
+            onChangeText={(text) => setCountry(text)}
+          />
+        </View>
+        <TouchableOpacity
+          style={[styles.searchButton, !isSearchEnabled && styles.disabledButton]}
+          onPress={isSearchEnabled ? handleSearch : null}
+          disabled={!isSearchEnabled}
+        >
+          <Text style={styles.searchButtonText}>Search</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Buttons */}
+      <View style={styles.buttonContainer}> 
+        {buildingResults.length > 0 && (
+          <TouchableOpacity style={styles.resultButton} onPress={() => setSearchResults(buildingResults)}>
+            <Text style={styles.resultButtonText}>Show Buildings</Text>
+          </TouchableOpacity>
+        )}
+        {landResults.length > 0 && (
+          <TouchableOpacity style={styles.resultButton} onPress={() => setSearchResults(landResults)}>
+            <Text style={styles.resultButtonText}>Show Lands</Text>
+          </TouchableOpacity>
+        )} 
+      </View>
+
+      {loading ? (
+        <Text style={styles.loadingText}>Fetching matching results...</Text>
+      ) : (
+        <FlatList
+          data={searchResults}
+          renderItem={renderResultItem}
+          keyExtractor={(item) => item.id.toString()}
+          ListEmptyComponent={() => (
+            searchPerformed && (
+              <View style={styles.noResultContainer}>
+                <Text style={styles.noResultText}>No result found</Text>
+              </View>
+            )
+          )}
+        />
+      )}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f2f2',
-    padding: 10,
+    padding: 20,
   },
-  buildingItem: {
+  searchRow: {
     marginBottom: 20,
-    backgroundColor: '#FFC46C',  
-    borderRadius: 8,
-    shadowColor: '#ccc',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 3, 
-    width: '100%',
-    borderBottomLeftRadius: 60,
-    paddingBottom: 20
   },
-  carouselContainer: {
-    height: 200,
+  searchInput: {
+    flex: 1,
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    padding: 10,
+    marginBottom: 10,
   },
-  buildingImage: { 
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover', 
-    borderBottomLeftRadius: 60,
-  }, 
-  paginationContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
-    bottom: 10,
-    left: 0,
-    right: 0,
-  },
-  rowContainer: {
+  filterContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start', 
-    paddingHorizontal: 10,
+    marginBottom: 10,
   },
-  iconContainer: {
-    marginLeft: 8, 
+  filterInput: {
+    flex: 1,
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    padding: 10,
+    marginRight: 10,
   },
-  paginationDot: {
-    width: 30,
-    height: 10,
-    borderRadius: 4,
-    backgroundColor: 'black',
-    marginHorizontal: 10,
+  nameSearch: {
+    borderColor: 'gray',
+    borderWidth: 2,
+    paddingLeft: 10,
+    marginBottom: 10
   },
-  activePaginationDot: {
-    width: 30,
-    height: 10,
-    borderRadius: 4,
-    backgroundColor: 'white',
-    marginHorizontal: 5,
+  searchButton: {
+    backgroundColor: '#007bff',
+    padding: 10,
+    borderRadius: 5,
   },
-  propertyDetails: { 
-    paddingLeft: 40
-  }, 
-  propertyTitle: {
-    fontSize: 16, 
-    fontWeight: 'bold',
-    flexShrink: 1, 
-    maxWidth: '80%',
-    top: 5,
-    right: 10,
-    marginBottom: 5
+  disabledButton: {
+    backgroundColor: 'lightgray',
   },
-  propertyPrice: {
-    fontSize: 12,
-    top: 5
+  searchButtonText: {
+    color: 'white',
   },
-  propertyCountry: {
-    fontSize    : 12, 
+  resultItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  resultImage: {
+    width: 50,
+    height: 50,
+    marginRight: 10,
+  },
+  resultName: {
+    fontSize: 16,
+    flex: 1, // Allow the text to take up remaining space
+    marginRight: 10, // Add some margin to the right to avoid cutting off text
+  },
+  buttonContainer: {
+    flexDirection: 'row', 
+    marginBottom: 10, 
+  },
+  resultButton: {
+    backgroundColor: '#007bff', 
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 10, 
+  },
+  resultButtonText: {
+    color: 'white',
+  },
+  loadingText: {
+    textAlign: 'center',
+    fontSize: 18,
+    marginTop: 20,
+  },
+  noResultContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noResultText: {
+    fontSize: 18,
+    color: 'gray',
   },
 });
 
-export default PropertyDisplay;
-
+export default SearchScreen;

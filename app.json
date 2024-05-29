@@ -29,7 +29,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/pivotbg.png",
         "backgroundColor": "#FFFFFF"
       },
       "intentFilters": [
@@ -54,11 +54,11 @@
       "package": "com.samsonlukman.propertyPivot"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/propertypivot.png"
     },
     "extra": {
       "eas": {
-        "projectId": "40d5882f-03a2-46e0-9e2e-9948ba8db01f"
+        "projectId": "f71cd2c0-f8b9-4a12-b187-ce151aff3f32"
       }
     }
   }

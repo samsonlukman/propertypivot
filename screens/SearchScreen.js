@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, TextInput, FlatList, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 
@@ -31,35 +31,56 @@ const SearchScreen = ({ navigation }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [buildingResults, setBuildingResults] = useState([]);
   const [landResults, setLandResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [searchPerformed, setSearchPerformed] = useState(false);
 
   const isSearchEnabled = searchQuery.length > 0 || minPrice.length > 0 || maxPrice.length > 0 || country.length > 0;
 
   const handleSearch = async () => {
     try {
-      // Clear previous search results
-      setSearchResults([]);
-  
+      setLoading(true); // Start loading
+      setSearchPerformed(true); // Mark search as performed
+      setSearchResults([]); // Clear previous search results
+
       const buildingResponse = await axios.get(`https://estaty.pythonanywhere.com/api/buildingss/?search=${searchQuery}&min_price=${minPrice}&max_price=${maxPrice}&country=${country}`);
       setBuildingResults(buildingResponse.data);
-  
+
       const landResponse = await axios.get(`https://estaty.pythonanywhere.com/api/landss/?search=${searchQuery}&min_price=${minPrice}&max_price=${maxPrice}&country=${country}`);
-      setLandResults(landResponse.data);
+      const landImagesResponse = await axios.get('https://estaty.pythonanywhere.com/api/land-images/');
+
+      const landResultsWithImages = landResponse.data.map((landItem) => {
+        const relatedImages = landImagesResponse.data.filter(
+          (image) => image.land === landItem.id
+        );
+        console.log(relatedImages)
+        return {
+          ...landItem,
+          images: relatedImages.map((imageItem) => imageItem.image),
+        };
+      });
+
+      setLandResults(landResultsWithImages);
+
+      // Merge building and land results
+      setSearchResults([...buildingResponse.data, ...landResultsWithImages]);
     } catch (error) {
       console.error('Error fetching search results:', error);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
-  
 
   const navigateToDetails = (item) => {
-    const detailScreen = item.category === 'building' ? 'PropertyDetail' : 'Land Detail';
-    console.log(item.category)
+    const detailScreen = item.category === 'building' ? 'PropertyDetail' : 'LandDetail';
     navigation.navigate(detailScreen, { propertyId: item.id });
   };
 
   const renderResultItem = ({ item }) => (
     <TouchableOpacity onPress={() => navigateToDetails(item)}>
       <View style={styles.resultItem}>
-        <Image source={{ uri: item.image }} style={styles.resultImage} />
+        {item.images && item.images.length > 0 && (
+          <Image source={{ uri: item.images[0] }} style={styles.resultImage} />
+        )}
         <Text style={styles.resultName}>{item.name}</Text>
       </View>
     </TouchableOpacity>
@@ -119,17 +140,22 @@ const SearchScreen = ({ navigation }) => {
         )} 
       </View>
 
-      <FlatList
-  data={searchResults}
-  renderItem={renderResultItem}
-  keyExtractor={(item) => item.id.toString()}
-  ListEmptyComponent={() => (
-    <View style={styles.noResultContainer}>
-      <Text style={styles.noResultText}>No result found</Text>
-    </View>
-  )}
-/>
-
+      {loading ? (
+        <Text style={styles.loadingText}>Fetching matching results...</Text>
+      ) : (
+        <FlatList
+          data={searchResults}
+          renderItem={renderResultItem}
+          keyExtractor={(item) => item.id.toString()}
+          ListEmptyComponent={() => (
+            searchPerformed && (
+              <View style={styles.noResultContainer}>
+                <Text style={styles.noResultText}>No result found</Text>
+              </View>
+            )
+          )}
+        />
+      )}
     </View>
   );
 };
@@ -203,8 +229,22 @@ const styles = StyleSheet.create({
     marginRight: 10, 
   },
   resultButtonText: {
-    color: 'white'
-  }
+    color: 'white',
+  },
+  loadingText: {
+    textAlign: 'center',
+    fontSize: 18,
+    marginTop: 20,
+  },
+  noResultContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noResultText: {
+    fontSize: 18,
+    color: 'gray',
+  },
 });
 
-export default SearchScreen; 
+export default SearchScreen;

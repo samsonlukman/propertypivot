@@ -80,7 +80,7 @@ const App = () => {
           <Tab.Screen name="Properties" component={PropertiesStack} options={{ headerShown: false }} />
           <Tab.Screen name="Lands" component={LandsStack} options={{ headerShown: true }} />
           <Tab.Screen name="Search" component={SearchScreen} options={{ headerShown: true }} />
-          <Tab.Screen name="Account" component={AccountStack} options={{ headerShown: false }} />
+          <Tab.Screen name="More" component={AccountStack} options={{ headerShown: false }} />
         </Tab.Navigator>
       </AuthProvider>
     </NavigationContainer>

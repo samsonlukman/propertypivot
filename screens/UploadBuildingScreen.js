@@ -56,7 +56,7 @@ const UploadBuildingScreen = ({ navigation }) => {
   const [BuildingImages, setBuildingImages] = useState([]);
   const [country, setCountry] = useState(countriesList[0]);
 
-  const referer = 'https://estaty.pythonanywhere.com'
+  const referer = 'https://estaty.pythonanywhere.com';
 
   const booleanFields = [
     { label: 'Swimming Pool', value: swimmingPool, setter: setSwimmingPool },
@@ -82,7 +82,7 @@ const UploadBuildingScreen = ({ navigation }) => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       aspect: [4, 3],
       quality: 1,
-      allowsMultipleSelection: true
+      allowsMultipleSelection: true,
     });
 
     if (!result.cancelled) {
@@ -90,7 +90,7 @@ const UploadBuildingScreen = ({ navigation }) => {
         const fileName = asset.uri.split('/').pop();
         return {
           uri: asset.uri,
-          type: 'image/jpeg', 
+          type: 'image/jpeg',
           name: fileName,
         };
       });
@@ -149,7 +149,7 @@ const UploadBuildingScreen = ({ navigation }) => {
         headers: {
           'Content-Type': 'multipart/form-data',
           'X-CSRFToken': csrfToken,
-          'referer': referer
+          referer,
         },
       });
 
@@ -243,6 +243,8 @@ const UploadBuildingScreen = ({ navigation }) => {
       <View style={styles.buttonContainer}>
         <Button title="Upload Property" onPress={handleUpload} />
       </View>
+
+      <View height={140} />
     </ScrollView>
   );
 };
@@ -250,50 +252,57 @@ const UploadBuildingScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 5
+    padding: 15,
+    backgroundColor: '#f8f8f8',
   },
   imageContainer: {
     marginBottom: 20,
-    overflow: 'hidden', 
   },
   previewContainer: {
     marginTop: 10,
+    alignItems: 'center',
   },
   previewImage: {
     width: '100%',
-    height: 100,
-    marginTop: 5,
-    resizeMode: 'contain', 
+    height: 200,
+    resizeMode: 'contain',
   },
   booleanFieldContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 15,
-    borderColor: 'gray',
+    padding: 10,
     borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    backgroundColor: '#fff',
   },
   pickerFieldContainer: {
     marginBottom: 15,
-    borderColor: 'gray',
+    padding: 10,
     borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    backgroundColor: '#fff',
   },
   textFieldContainer: {
     marginBottom: 15,
   },
   picker: {
     height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
   },
   textInput: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: '#ccc',
     borderWidth: 1,
+    borderRadius: 5,
     padding: 10,
+    backgroundColor: '#fff',
   },
   label: {
     fontSize: 16,
+    marginBottom: 5,
   },
   buttonContainer: {
     marginTop: 20,

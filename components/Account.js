@@ -163,11 +163,11 @@ const Account = ({ navigation }) => {
       >
         <View style={styles.modalContainer}>
           <TouchableOpacity onPress={() => { toggleUploadModal(); navigation.navigate('UploadLand')}} >
-            <Text style={styles.modalEmail}>Land---</Text>
+            <Text style={styles.modalEmail}>Land---></Text>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => { toggleUploadModal(); navigation.navigate('UploadBuilding')}}>
-            <Text style={styles.modalWhatsapp}>Building---</Text>
+            <Text style={styles.modalWhatsapp}>Building---></Text>
           </TouchableOpacity>
 
           <Button title="Close" onPress={toggleUploadModal} />
