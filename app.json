@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "propertyPivot",
-    "slug": "propertyPivot",
+    "name": "Property Pivot",
+    "slug": "property-pivot",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/imagepivot.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/imagepivot.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -29,7 +29,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/pivotbg.png",
+        "foregroundImage": "./assets/imagepivot.png",
         "backgroundColor": "#FFFFFF"
       },
       "intentFilters": [
@@ -54,11 +54,11 @@
       "package": "com.samsonlukman.propertyPivot"
     },
     "web": {
-      "favicon": "./assets/propertypivot.png"
+      "favicon": "./assets/imagepivot.png"
     },
     "extra": {
       "eas": {
-        "projectId": "f71cd2c0-f8b9-4a12-b187-ce151aff3f32"
+        "projectId": "09e3e11e-2421-49d5-b249-ade052fa9781"
       }
     }
   }

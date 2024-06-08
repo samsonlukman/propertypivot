@@ -42,9 +42,24 @@ const SearchScreen = ({ navigation }) => {
       setSearchPerformed(true); // Mark search as performed
       setSearchResults([]); // Clear previous search results
 
+      // Fetch buildings and their images
       const buildingResponse = await axios.get(`https://estaty.pythonanywhere.com/api/buildingss/?search=${searchQuery}&min_price=${minPrice}&max_price=${maxPrice}&country=${country}`);
-      setBuildingResults(buildingResponse.data);
+      const buildingImagesResponse = await axios.get('https://estaty.pythonanywhere.com/api/building-images/');
 
+      const buildingResultsWithImages = buildingResponse.data.map((buildingItem) => {
+        const relatedImages = buildingImagesResponse.data.filter(
+          (image) => image.building === buildingItem.id
+        );
+
+        return {
+          ...buildingItem,
+          images: relatedImages.map((imageItem) => imageItem.image),
+        };
+      });
+
+      setBuildingResults(buildingResultsWithImages);
+
+      // Fetch lands and their images
       const landResponse = await axios.get(`https://estaty.pythonanywhere.com/api/landss/?search=${searchQuery}&min_price=${minPrice}&max_price=${maxPrice}&country=${country}`);
       const landImagesResponse = await axios.get('https://estaty.pythonanywhere.com/api/land-images/');
 
@@ -52,7 +67,7 @@ const SearchScreen = ({ navigation }) => {
         const relatedImages = landImagesResponse.data.filter(
           (image) => image.land === landItem.id
         );
-        console.log(relatedImages)
+
         return {
           ...landItem,
           images: relatedImages.map((imageItem) => imageItem.image),
@@ -62,7 +77,7 @@ const SearchScreen = ({ navigation }) => {
       setLandResults(landResultsWithImages);
 
       // Merge building and land results
-      setSearchResults([...buildingResponse.data, ...landResultsWithImages]);
+      setSearchResults([...buildingResultsWithImages, ...landResultsWithImages]);
     } catch (error) {
       console.error('Error fetching search results:', error);
     } finally {
@@ -81,10 +96,17 @@ const SearchScreen = ({ navigation }) => {
         {item.images && item.images.length > 0 && (
           <Image source={{ uri: item.images[0] }} style={styles.resultImage} />
         )}
-        <Text style={styles.resultName}>{item.name}</Text>
+        <Text
+          style={styles.resultName}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {item.name}
+        </Text>
       </View>
     </TouchableOpacity>
   );
+  
 
   return (
     <View style={styles.container}>
@@ -217,6 +239,8 @@ const styles = StyleSheet.create({
   },
   resultName: {
     fontSize: 16,
+    flex: 1, // Allow the text to take up remaining space
+    marginRight: 10, // Add some margin to the right to avoid cutting off text
   },
   buttonContainer: {
     flexDirection: 'row', 
